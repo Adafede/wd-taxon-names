@@ -1,0 +1,157 @@
+---
+title: "A Short Survey of Wikidata's Specific Epithets"
+format:
+    jss-html: default
+    jss-pdf:
+        keep-tex: true  
+author:
+  - name: Adriano Rutz
+    affiliations:
+      - name: University of Geneva
+        department: Department of Phytochemistry and Bioactive Natural Products
+        address: Rue Michel-Servet, 1
+        city: Geneva
+        country: Switzerland
+        postal-code: 1211
+    orcid: 0000-0003-0443-9902
+    email: adriano.rutz@unige.ch
+  - name: James Hare
+    affiliations:
+      - name: ...
+        department: ...
+        address: ...
+        city: ...
+        country: ...
+        postal-code: 1211
+    orcid: 0000-0003-1416-675X
+    email: ...
+abstract: |
+  This short article illustrates the content of Wikidata's taxon names.
+
+keywords: [Wikidata, Taxa, Names]
+keywords-formatted: [Wikidata, Taxa, Names]
+
+bibliography: bibliography.bib  
+---
+
+```{R import, include=FALSE}
+query_results <- "data/taxa-2022-07-18.txt"
+
+json <- jsonlite::fromJSON(txt = query_results,
+                                  flatten = TRUE)
+
+results_raw <- json[["results"]][["bindings"]]
+```
+
+## Introduction {#sec-intro}
+
+The query (<https://w.wiki/5UJq>) was performed on 2022-07-18 and returned `r format(nrow(results_raw), big.mark = ",")` rows.
+
+## Results {#sec-results}
+
+There were `r format(nrow(results_raw |> dplyr::distinct(id.value)), big.mark = ",")` unique ids and `r format(nrow(results_raw |> dplyr::distinct(name.value)), big.mark = ",")` unique binomial names.
+
+```{R tidy, include=FALSE}
+results_processed <- results_raw |>
+  dplyr::mutate(specific_name = gsub(
+    pattern = ".* ",
+    replacement = "",
+    x = name.value
+  )) |>
+  dplyr::group_by(specific_name) |>
+  dplyr::count(sort = TRUE) |>
+  dplyr::ungroup() |>
+  dplyr::mutate(cum_sum = cumsum(n))
+```
+
+```{R strings, include=FALSE}
+results_strings <- results_processed |>
+  dplyr::mutate(length = stringr::str_length(string = specific_name))
+
+longest <- results_strings |>
+    dplyr::filter(length == max(length)) |>
+    dplyr::pull(specific_name)
+
+id <- results_raw |>
+  dplyr::filter(longest == gsub(
+    pattern = ".* ",
+    replacement = "",
+    x = name.value
+  )) |> 
+  dplyr::pull(id.value)
+```
+In total, there were `r format(nrow(results_processed |> dplyr::distinct(specific_name)), big.mark = ",")` specific epithets.
+The most used was `r as.character(results_processed$specific_name[1])`, with `r format(as.numeric(results_processed$n[1]), big.mark = ",")` occurrences.
+
+```{R table, include=FALSE}
+table <- results_processed |>
+  dplyr::select(`Specific Epithet` = specific_name, Count = n) |>
+  head(10)
+
+single <- results_processed |>
+  dplyr::filter(n == 1) |>
+  dplyr::select(`Specific Epithet` = specific_name, Count = n)
+```
+
+An overview of the ten most used epithets is presented in @tbl-topten:
+```{R topten, echo=FALSE}
+#| label: tbl-topten
+#| tbl-cap: "Overview of the Ten Most Used Epithets"
+knitr::kable(
+  x = table
+)
+```
+
+Together, they account for `r sprintf("%0.2f%%", (sum(table$Count)/sum(results_processed$n)) * 100)` of all taxon names.
+
+There were `r format(nrow(single), big.mark = ",")` (`r sprintf("%0.2f%%", (nrow(single)/nrow(results_processed)) * 100)`) specific epithets used only once.
+
+The longest epithet was *`r as.character(longest)`*.
+It corresponds to <`r as.character(id)`>.
+
+## Illustrations {#sec-illustrations}
+
+```{R plot, include=FALSE}
+results_plot <- results_processed |>
+  dplyr::ungroup()  |>
+  dplyr::arrange(n) |>
+  dplyr::mutate(cum_sum = cumsum(n)) |>
+  dplyr::mutate(
+    Epithets = n / max(n),
+    Taxa = cum_sum / max(cum_sum)
+  )  |>
+  dplyr::distinct(Epithets, .keep_all = TRUE)
+```
+
+A cumulative frequency curve is presented in @fig-cumul:
+
+```{R cumul, echo=FALSE}
+#| label: fig-cumul
+#| fig-cap: "Cumulative Frequency Curve"
+#| warning: false
+ggplot2::ggplot(results_plot,
+                ggplot2::aes(x = Epithets,
+                             y = Taxa)) +
+  ggplot2::theme_bw() +
+  ggplot2::stat_ecdf(geom = "step")
+```
+
+## Summary and discussion {#sec-summary}
+
+\\ TODO
+
+## Computational details {.unnumbered}
+
+\\ TODO
+
+## Acknowledgments {.unnumbered}
+
+\\ TODO
+
+## References {.unnumbered}
+
+:::{#refs}
+
+:::
+
+{{< pagebreak >}}
