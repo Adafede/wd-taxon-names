@@ -35,7 +35,7 @@ bibliography: bibliography.bib
 ---
 
 ```{R import, include=FALSE}
-query_results <- "data/taxa-2022-07-18.txt"
+query_results <- "https://zenodo.org/record/6873163/files/2022-07-18-wd-taxa.txt"
 
 json <- jsonlite::fromJSON(txt = query_results,
                                   flatten = TRUE)
@@ -46,6 +46,7 @@ results_raw <- json[["results"]][["bindings"]]
 ## Introduction {#sec-intro}
 
 The query (<https://w.wiki/5UJq>) was performed on 2022-07-18 and returned `r format(nrow(results_raw), big.mark = ",")` rows.
+Results are available on Zenodo (<https://doi.org/10.5281/zenodo.6873162>).
 
 ## Results {#sec-results}
 
@@ -135,23 +136,5 @@ ggplot2::ggplot(results_plot,
   ggplot2::theme_bw() +
   ggplot2::stat_ecdf(geom = "step")
 ```
-
-## Summary and discussion {#sec-summary}
-
-\\ TODO
-
-## Computational details {.unnumbered}
-
-\\ TODO
-
-## Acknowledgments {.unnumbered}
-
-\\ TODO
-
-## References {.unnumbered}
-
-:::{#refs}
-
-:::
 
 {{< pagebreak >}}
