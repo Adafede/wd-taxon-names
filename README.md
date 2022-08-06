@@ -1,3 +1,4 @@
-# TODO
+# A Short Survey of Wikidata’s Specific Epithets
 
-\\ TODO
+The query (https://w.wiki/5UJq) was performed on 2022-07-18 and returned 2,887,803 rows. 
+Results are available on Zenodo (https://doi.org/10.5281/zenodo.6873162).
