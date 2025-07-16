@@ -2,8 +2,6 @@
 title: "A Short Survey of Wikidata's Specific Epithets"
 format:
     jss-html: default
-    jss-pdf:
-        keep-tex: true  
 author:
   - name: Adriano Rutz
     affiliations:
@@ -39,7 +37,7 @@ keywords-formatted: [Wikidata, Taxa, Names]
 bibliography: bibliography.bib  
 ---
 
-```{R import, include=FALSE}
+```{r import, include=FALSE}
 query_results <- "https://zenodo.org/record/6873163/files/2022-07-18-wd-taxa.txt"
 
 json <- jsonlite::fromJSON(txt = query_results,
@@ -55,52 +53,54 @@ Results are available on Zenodo (<https://doi.org/10.5281/zenodo.6873162>).
 
 ## Results {#sec-results}
 
-There were `r format(nrow(results_raw |> dplyr::distinct(id.value)), big.mark = ",")` unique ids and `r format(nrow(results_raw |> dplyr::distinct(name.value)), big.mark = ",")` unique binomial names.
+There were `r format(nrow(results_raw |> tidytable::distinct(id.value)), big.mark = ",")` unique ids and `r format(nrow(results_raw |> tidytable::distinct(name.value)), big.mark = ",")` unique binomial names.
 
-```{R tidy, include=FALSE}
+```{r tidy, include=FALSE}
 results_processed <- results_raw |>
-  dplyr::mutate(specific_name = gsub(
+  tidytable::mutate(specific_name = gsub(
     pattern = ".* ",
     replacement = "",
     x = name.value
   )) |>
-  dplyr::group_by(specific_name) |>
-  dplyr::count(sort = TRUE) |>
-  dplyr::ungroup() |>
-  dplyr::mutate(cum_sum = cumsum(n))
+  tidytable::group_by(specific_name) |>
+  tidytable::count(sort = TRUE) |>
+  tidytable::ungroup() |>
+  tidytable::mutate(cum_sum = cumsum(n))
 ```
 
-```{R strings, include=FALSE}
+```{r strings, include=FALSE}
 results_strings <- results_processed |>
-  dplyr::mutate(length = stringr::str_length(string = specific_name))
+  tidytable::mutate(length = stringr::str_length(string = specific_name))
 
 longest <- results_strings |>
-    dplyr::filter(length == max(length)) |>
-    dplyr::pull(specific_name)
+    tidytable::filter(length == max(length)) |>
+    tidytable::pull(specific_name)
 
 id <- results_raw |>
-  dplyr::filter(longest == gsub(
+  tidytable::filter(longest == gsub(
     pattern = ".* ",
     replacement = "",
     x = name.value
   )) |> 
-  dplyr::pull(id.value)
+  tidytable::pull(id.value)
 ```
-In total, there were `r format(nrow(results_processed |> dplyr::distinct(specific_name)), big.mark = ",")` specific epithets.
+
+In total, there were `r format(nrow(results_processed |> tidytable::distinct(specific_name)), big.mark = ",")` specific epithets.
 The most used was `r as.character(results_processed$specific_name[1])`, with `r format(as.numeric(results_processed$n[1]), big.mark = ",")` occurrences.
 
-```{R table, include=FALSE}
+```{r table, include=FALSE}
 table <- results_processed |>
-  dplyr::select(`Specific Epithet` = specific_name, Count = n) |>
+  tidytable::select(`Specific Epithet` = specific_name, Count = n) |>
   head(10)
 
 single <- results_processed |>
-  dplyr::filter(n == 1) |>
-  dplyr::select(`Specific Epithet` = specific_name, Count = n)
+  tidytable::filter(n == 1) |>
+  tidytable::select(`Specific Epithet` = specific_name, Count = n)
 ```
 
 An overview of the ten most used epithets is presented in @tbl-topten:
-```{R topten, echo=FALSE}
+
+```{r topten, echo=FALSE}
 #| label: tbl-topten
 #| tbl-cap: "Overview of the Ten Most Used Epithets"
 knitr::kable(
@@ -117,12 +117,12 @@ It corresponds to <`r as.character(id)`>.
 
 ## Illustrations {#sec-illustrations}
 
-```{R plot, include=FALSE}
+```{r plot, include=FALSE}
 results_plot <- results_processed |>
-  dplyr::ungroup()  |>
-  dplyr::arrange(n) |>
-  dplyr::mutate(cum_sum = cumsum(n)) |>
-  dplyr::mutate(
+  tidytable::ungroup()  |>
+  tidytable::arrange(n) |>
+  tidytable::mutate(cum_sum = cumsum(n)) |>
+  tidytable::mutate(
     Epithets = n / max(n),
     Taxa = cum_sum / max(cum_sum)
   )  |>
@@ -132,6 +132,7 @@ results_plot <- results_processed |>
 A cumulative frequency curve is presented in @fig-cumul:
 
 ```{R cumul, echo=FALSE}
+#| dev: svglite
 #| label: fig-cumul
 #| fig-cap: "Cumulative Frequency Curve"
 #| warning: false
