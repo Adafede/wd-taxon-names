@@ -14,7 +14,6 @@ author:
         country: Switzerland
         postal-code: 1211
     orcid: 0000-0003-0443-9902
-    email: adriano.rutz@unige.ch
   - name: James Hare
     affiliations:
       - name: ...
@@ -22,12 +21,18 @@ author:
         address: ...
         city: ...
         country: ...
-        postal-code: 1211
+        postal-code: ...
     orcid: 0000-0003-1416-675X
-    email: ...
 abstract: |
   This short article illustrates the content of Wikidata's taxon names.
-
+citation:
+  url: https://adafede.github.io/wd-taxon-names/index.html
+comments:
+  giscus:
+    repo: adafede/wd-taxon-names
+  hypothesis:
+    showHighlights: always
+google-scholar: true
 keywords: [Wikidata, Taxa, Names]
 keywords-formatted: [Wikidata, Taxa, Names]
 
