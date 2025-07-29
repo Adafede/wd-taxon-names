@@ -1,7 +1,7 @@
 ---
-title: "A Short Survey of Wikidata's Specific Epithets"
+title: A Short Survey of Wikidata's Specific Epithets
 format:
-    jss-html: default
+  jss-html: default
 author:
   - name: Adriano Rutz
     affiliations:
@@ -31,17 +31,24 @@ comments:
   hypothesis:
     showHighlights: always
 google-scholar: true
-keywords: [Wikidata, Taxa, Names]
-keywords-formatted: [Wikidata, Taxa, Names]
-
-bibliography: bibliography.bib  
+keywords:
+  - Wikidata
+  - Taxa
+  - Names
+keywords-formatted:
+  - Wikidata
+  - Taxa
+  - Names
+bibliography: bibliography.bib
 ---
 
 ```{r import, include=FALSE}
 query_results <- "https://zenodo.org/record/6873163/files/2022-07-18-wd-taxa.txt"
 
-json <- jsonlite::fromJSON(txt = query_results,
-                                  flatten = TRUE)
+json <- jsonlite::fromJSON(
+  txt = query_results,
+  flatten = TRUE
+)
 
 results_raw <- json[["results"]][["bindings"]]
 ```
@@ -73,15 +80,15 @@ results_strings <- results_processed |>
   tidytable::mutate(length = stringr::str_length(string = specific_name))
 
 longest <- results_strings |>
-    tidytable::filter(length == max(length)) |>
-    tidytable::pull(specific_name)
+  tidytable::filter(length == max(length)) |>
+  tidytable::pull(specific_name)
 
 id <- results_raw |>
   tidytable::filter(longest == gsub(
     pattern = ".* ",
     replacement = "",
     x = name.value
-  )) |> 
+  )) |>
   tidytable::pull(id.value)
 ```
 
@@ -119,13 +126,13 @@ It corresponds to <`r as.character(id)`>.
 
 ```{r plot, include=FALSE}
 results_plot <- results_processed |>
-  tidytable::ungroup()  |>
+  tidytable::ungroup() |>
   tidytable::arrange(n) |>
   tidytable::mutate(cum_sum = cumsum(n)) |>
   tidytable::mutate(
     Epithets = n / max(n),
     Taxa = cum_sum / max(cum_sum)
-  )  |>
+  ) |>
   dplyr::distinct(Epithets, .keep_all = TRUE)
 ```
 
@@ -136,9 +143,13 @@ A cumulative frequency curve is presented in @fig-cumul:
 #| label: fig-cumul
 #| fig-cap: "Cumulative Frequency Curve"
 #| warning: false
-ggplot2::ggplot(results_plot,
-                ggplot2::aes(x = Epithets,
-                             y = Taxa)) +
+ggplot2::ggplot(
+  results_plot,
+  ggplot2::aes(
+    x = Epithets,
+    y = Taxa
+  )
+) +
   ggplot2::theme_bw() +
   ggplot2::stat_ecdf(geom = "step")
 ```
