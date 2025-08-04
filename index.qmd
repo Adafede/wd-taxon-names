@@ -39,6 +39,7 @@ keywords-formatted:
   - Wikidata
   - Taxa
   - Names
+license: CC BY-SA
 bibliography: bibliography.bib
 ---
 
