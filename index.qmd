@@ -30,6 +30,7 @@ comments:
     repo: adafede/wd-taxon-names
   hypothesis:
     showHighlights: always
+creative_commons: CC BY
 google-scholar: true
 keywords:
   - Wikidata
@@ -39,7 +40,7 @@ keywords-formatted:
   - Wikidata
   - Taxa
   - Names
-license: CC BY-SA
+license: CC BY
 bibliography: bibliography.bib
 ---
 
