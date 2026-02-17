@@ -1,0 +1,24 @@
+name: Deploy to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    needs: build
+    runs-on: codeberg-tiny
+    steps:
+      - name: Deploy to Codeberg Pages
+        uses: actions/git-pages@v2
+        with:
+          site: https://adafede.codeberg.page/wd-taxon-names/
+          token: ${{ forge.token }}
+          source: .
