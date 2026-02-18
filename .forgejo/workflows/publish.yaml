@@ -15,6 +15,7 @@ jobs:
   deploy:
     runs-on: codeberg-tiny
     steps:
+      - uses: actions/checkout@v6
       - uses: actions/git-pages@v2
         with:
           site: https://adafede.codeberg.page/wd-taxon-names/ 
